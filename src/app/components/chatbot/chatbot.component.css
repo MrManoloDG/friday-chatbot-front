@@ -1,0 +1,14 @@
+#chat {
+    padding: 5%;
+    min-width: 400px;
+    height: 50% !important;
+}
+
+#chat > #messages {
+    min-height: 50% !important;
+}
+
+.img-user {
+    height: 30px;
+}
+

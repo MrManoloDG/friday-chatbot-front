@@ -1,0 +1,32 @@
+sudo: required
+language: node_js
+node_js:
+  - 12
+
+services:
+  - docker
+
+before_install:
+  - wget -qO- https://toolbelt.heroku.com/install.sh | sh
+
+install:
+  - npm install
+
+script: 
+  - npm test
+  - docker build -t friday-chatbot-front .
+
+deploy:
+  provider : script
+  cleanup: false
+  script:
+    docker login -u $DOCKER_USER -p $DOCKER_PASSWORD;
+    docker tag friday-chatbot-front $DOCKER_USER/friday-chatbot-front:$TRAVIS_BUILD_NUMBER;
+    docker push $DOCKER_USER/friday-chatbot-front:$TRAVIS_BUILD_NUMBER;
+    docker tag friday-chatbot-front $DOCKER_USER/friday-chatbot-front:latest;
+    docker push $DOCKER_USER/friday-chatbot-front:latest;
+    heroku container:login;
+    heroku container:push web -a fridaychatbot;
+    heroku container:release web -a fridaychatbot;
+  on:
+    branch: master

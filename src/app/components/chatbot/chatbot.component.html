@@ -1,0 +1,16 @@
+<form>
+  <div class="card bg-white border border-primary rounded" id="chat">
+    <h5 class="card-title text-primary">Chatbot</h5>
+    <div *ngFor="let message of messages; let i = index" id="messages" class="row rounded p-1 mx-1 my-2 {{i%2 ? 'bg-light' : 'bg-celeste'}}">
+      <span class="col-12 mx-1 msg my-auto {{i%2 ? 'd-flex justify-content-end' : 'd-flex justify-content-start'}} " >{{message.text}}</span>        
+      <span *ngIf="message.poster_path"><img src="{{message.poster_path}}"></span>
+    </div>
+    <div class="form-group"></div>
+      <div class="input-group">
+          <input type="text" class="form-control" [(ngModel)]="userMessage" name="userMessage"> &nbsp;
+          <span class="input-group-btn">
+              <button class="btn btn-success" type="submit"      (click)="sendMessage(0)"><i class="fa fa-paper-plane" aria-hidden="true"></i></button></span>
+    </div>
+  </div>
+
+</form>
