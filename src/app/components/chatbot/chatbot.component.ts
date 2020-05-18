@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogflowService } from 'src/app/service/dialogflow.service';
+import { GraphService } from 'src/app/service/graph.service';
 
 @Component({
   selector: 'app-chatbot',
@@ -9,7 +10,7 @@ import { DialogflowService } from 'src/app/service/dialogflow.service';
 })
 export class ChatbotComponent implements OnInit {
 
-  constructor(private service: DialogflowService) { }
+  constructor(private service: DialogflowService, private graphService: GraphService) { }
 
   poster_path = '';
   messages: any = [];
@@ -32,24 +33,36 @@ export class ChatbotComponent implements OnInit {
     };
     if (!flag) {
       this.messages.push(userResponse);
+      this.scrollChat();
     }
     this.userMessage = '';
     this.service.getResponseFromAgent(tempMessage).then(result => {
-    let url = result.result.fulfillment.speech;
-    console.log(result.result.fulfillment);
-    if (result.result.action.toString() === 'get-movie-details') {
-      splitString = url.split('url');
-      customMessage = splitString[0];
-      this.poster_path = splitString[1] ? splitString[1].replace(/['"]+/g, '') : '';
-    }
+      let url = result.result.fulfillment.speech;
+      console.log(result.result.fulfillment);
+      if (result.result.action.toString() === 'drawGraph') {
+        let json_draw = JSON.parse(result.result.fulfillment.speech);
+        console.log(json_draw);
+        splitString = url.split('url');
+        customMessage = json_draw.resp;
+        this.graphService.draw(json_draw.graph, json_draw.colname);
+        this.poster_path = splitString[1] ? splitString[1].replace(/['"]+/g, '') : '';
+      }
       let botResponse = {
         url: this.bot_url,
         text: customMessage ? customMessage : url,
         poster_path: this.poster_path ? 'http://image.tmdb.org/t/p/w154/' + this.poster_path : ''
       };
       this.messages.push(botResponse);
+      this.scrollChat();
     });
     this.poster_path = '';
+  }
+
+  scrollChat() {
+    setTimeout(function() {
+      const scrollingChat = document.getElementById('caja-chat');
+      scrollingChat.scrollTop = scrollingChat.scrollHeight;
+    } , 0);
   }
 
   floatMessage(message: any) {
@@ -58,6 +71,10 @@ export class ChatbotComponent implements OnInit {
     } else {
       return '';
     }
+  }
+
+  transformDrawResponse(response: any) {
+
   }
 
 }

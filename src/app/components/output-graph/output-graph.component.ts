@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
+import { ElasticsearchService } from 'src/app/services/elasticsearch.service';
 
 declare var require: any;
 let Boost = require('highcharts/modules/boost');
@@ -38,7 +39,7 @@ export class OutputGraphComponent implements OnInit {
     }]
   };
 
-  constructor() { }
+  constructor(private elasticService: ElasticsearchService) { }
 
   ngOnInit() {
     Highcharts.chart('container', this.options);

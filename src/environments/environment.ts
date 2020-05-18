@@ -3,7 +3,8 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  token: '2b05efa79ab44c8e81c8b7af11db5cb6' ,
+  token: 'e2a662cbb81a4f5bb4f2655746d95314' ,
+  elasticURI: 'http://fridaywebhook.duckdns.org:9200',
   production: false
 };
 

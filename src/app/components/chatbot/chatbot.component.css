@@ -1,7 +1,14 @@
 #chat {
     padding: 5%;
     min-width: 400px;
-    height: 50% !important;
+
+    
+}
+
+#chat > #caja-chat {
+    height: 300px;
+    overflow-y: auto;
+    max-height: 300px;
 }
 
 #chat > #messages {
