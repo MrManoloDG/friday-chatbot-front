@@ -8,6 +8,11 @@ import { ChatbotComponent } from './components/chatbot/chatbot.component';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
 
+import { ChartModule, HIGHCHARTS_MODULES } from 'angular-highcharts';
+import * as Highcharts from 'highcharts';
+import Bullet from 'highcharts/modules/bullet';
+Bullet(Highcharts);
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -19,6 +24,7 @@ import { HttpModule } from '@angular/http';
     FormsModule,
     HttpClientModule,
     HttpModule,
+    ChartModule
   ],
   providers: [],
   bootstrap: [AppComponent]

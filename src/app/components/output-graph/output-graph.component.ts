@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { ElasticsearchService } from 'src/app/services/elasticsearch.service';
+import Bullet from 'highcharts/modules/bullet';
 
 declare var require: any;
 let Boost = require('highcharts/modules/boost');
@@ -15,34 +16,11 @@ let More = require('highcharts/highcharts-more');
 })
 export class OutputGraphComponent implements OnInit {
 
-  public options: any = {
-    chart: {
-        type: 'bar'
-    },
-    title: {
-        text: 'Fruit Consumption'
-    },
-    xAxis: {
-        categories: ['Apples', 'Bananas', 'Oranges']
-    },
-    yAxis: {
-        title: {
-            text: 'Fruit eaten'
-        }
-    },
-    series: [{
-        name: 'Jane',
-        data: [1, 0, 4]
-    }, {
-        name: 'John',
-        data: [5, 7, 3]
-    }]
-  };
+  public options: any;
 
   constructor(private elasticService: ElasticsearchService) { }
 
   ngOnInit() {
-    Highcharts.chart('container', this.options);
     /*
     if (window.addEventListener) {
       (<any>window).addEventListener("message", this.displayMessage, false);
@@ -51,13 +29,6 @@ export class OutputGraphComponent implements OnInit {
     }
     */
 
-  }
-
-  
-  public displayMessage (evt) {
-    // $('.imagepreview').attr('src', evt.data);
-    // $('#imagemodal').modal('show');
-    alert("Polla");
   }
 
 }

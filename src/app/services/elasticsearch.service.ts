@@ -36,22 +36,48 @@ export class ElasticsearchService {
     });
   }
 
-  async searchByOneColName(colname: string) {
-    
+  async getByOneColName(colname: string) {
     return this.client.search({
       index: 'covid_canada',
       body: {
         _source: [colname],
+        size: 10000,
         query: {
           match_all: {}
         }
       }
     }).then(function(resp) {
-      console.log("Successful query!");
+      console.log('Successful query!');
       console.log(JSON.stringify(resp, null, 4));
       return resp.hits.hits;
     }, function(err) {
-      console.trace(err.message);
+      console.log(err.message);
+    });
+  }
+
+  async getLastByOneColName(colname: string) {
+    return this.client.search({
+      index: 'covid_canada',
+      body: {
+        _source: [colname],
+        size: 1,
+        query: {
+          match_all: {}
+        },
+        sort: [
+          {
+            '@timestamp': {
+              'order': 'asc'
+            }
+          }
+        ]
+      }
+    }).then(function(resp) {
+      console.log('Successful query!');
+      console.log(JSON.stringify(resp, null, 4));
+      return resp.hits.hits;
+    }, function(err) {
+      console.log(err.message);
     });
   }
 
@@ -64,17 +90,18 @@ export class ElasticsearchService {
           colname : {
               terms : {
                 field : colname,
-                order : { _key : "asc"}
+                order : { _key : 'asc'}
               }
           }
       }
       }
     }).then(function(resp) {
-      console.log("Successful query!");
+      console.log('Successful query!');
       console.log(JSON.stringify(resp, null, 4));
       return resp.aggregations.colname.buckets;
     }, function(err) {
-      console.trace(err.message);
+      console.log(err.message);
     });
   }
+
 }
