@@ -150,7 +150,7 @@ export class ElasticsearchService {
                 'aggs': {
                   'min': {
                     'min': {
-                      'field': 'canadadaily'
+                      'field': colname
                     }
                   },
                   'max': {
