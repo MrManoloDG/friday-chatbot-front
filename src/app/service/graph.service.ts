@@ -22,6 +22,12 @@ export class GraphService {
       case 'bullet_graph':
         this.drawBulletGraph(colname, params);
         break;
+      case 'scatter_plot':
+        this.drawScatterPlot(colname, params);
+        break;
+      case 'box_plot':
+        this.drawBoxPlot(colname, params);
+        break;
 
     }
   }
@@ -194,6 +200,133 @@ export class GraphService {
           }
       };
       Highcharts.chart('container', this.options);
+    });
+  }
+
+  drawScatterPlot(colname: string[], params: any) {
+    this.elasticService.getTwoColname(colname).then((res) => {
+      let data = [];
+
+      res.map(e => {
+        data.push([e._source[colname[0]], e._source[colname[1]]]);
+      });
+
+      this.options = {
+        chart: {
+            type: 'scatter',
+            zoomType: 'xy'
+        },
+        title: {
+            text: 'Scatter Plot'
+        },
+        subtitle: {
+            text: ''
+        },
+        xAxis: {
+            title: {
+                enabled: true,
+                text: colname[0]
+            },
+            startOnTick: true,
+            endOnTick: true,
+            showLastLabel: true
+        },
+        yAxis: {
+            title: {
+                text: colname[1]
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'left',
+            verticalAlign: 'top',
+            x: 100,
+            y: 70,
+            floating: true,
+            backgroundColor: Highcharts.defaultOptions.chart.backgroundColor,
+            borderWidth: 1
+        },
+        plotOptions: {
+            scatter: {
+                marker: {
+                    radius: 5,
+                    states: {
+                        hover: {
+                            enabled: true,
+                            lineColor: 'rgb(100,100,100)'
+                        }
+                    }
+                },
+                states: {
+                    hover: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<b>{series.name}</b><br>',
+                    pointFormat: '{point.x} , {point.y} '
+                }
+            }
+        },
+        series: [{
+            name: 'Point',
+            color: 'rgba(223, 83, 83, .5)',
+            data: data
+        }]
+    };
+      Highcharts.chart('container', this.options);
+    });
+  }
+
+  drawBoxPlot(colname: string, params: any) {
+    this.elasticService.getBoxPlotTime(colname, params.IntervalTime).then((res) => {
+      console.log("dibujando box plot");
+      console.log(res);
+
+      let title_time = [];
+      let data = [];
+
+      res.map( e => {
+        title_time.push(new Date(e.key).toLocaleDateString());
+        data.push([
+          e.min.value,
+          e.percentiles.values['25.0'],
+          e.percentiles.values['50.0'],
+          e.percentiles.values['75.0'],
+          e.max.value
+        ]);
+      });
+
+      this.options = {
+
+        chart: {
+            type: 'boxplot'
+        },
+        title: {
+            text: 'Box Plot'
+        },
+        legend: {
+            enabled: false
+        },
+        xAxis: {
+            categories: title_time,
+            title: {
+                text: 'Intervalo de Tiempo'
+            }
+        },
+        yAxis: {
+            title: {
+                text: 'Observations'
+            }
+        },
+        series: [{
+            name: 'Observations',
+            data: data
+        }]
+    };
+    Highcharts.chart('container', this.options);
     });
   }
 }

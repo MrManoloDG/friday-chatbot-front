@@ -16,6 +16,14 @@ const httpOptions = {
 })
 export class ElasticsearchService {
 
+  private IntervalTime = {
+    'meses': 'month',
+    'años': 'year',
+    'horas': 'hour',
+    'dias': 'day',
+    'minutos': 'minute'
+  }
+
   private client: elasticsearch.Client;
 
   private connect() {
@@ -99,6 +107,86 @@ export class ElasticsearchService {
       console.log('Successful query!');
       console.log(JSON.stringify(resp, null, 4));
       return resp.aggregations.colname.buckets;
+    }, function(err) {
+      console.log(err.message);
+    });
+  }
+
+
+  async getTwoColname(colnames: string[]) {
+    return this.client.search({
+      index: 'covid_canada',
+      body: {
+        _source: [colnames[0], colnames[1]],
+        size: 10000,
+        query: {
+          match_all: {}
+        }
+      }
+    }).then(function(resp) {
+      console.log('Successful query!');
+      console.log(JSON.stringify(resp, null, 4));
+      return resp.hits.hits;
+    }, function(err) {
+      console.log(err.message);
+    });
+  }
+
+  async getBoxPlotTime(colname: string, period: string) {
+    return this.client.search({
+      index: 'covid_canada',
+      body: {
+        '_source': [colname, 'date'],
+        'size': 10000,
+        'aggs' : {
+            'overtime' : {
+                'date_histogram' : {
+                    'field' : 'date',
+                    'calendar_interval' : this.IntervalTime[period],
+                    'order': {
+                      '_key': 'desc'
+                    }
+                },
+                'aggs': {
+                  'min': {
+                    'min': {
+                      'field': 'canadadaily'
+                    }
+                  },
+                  'max': {
+                    'max': {
+                      'field': colname
+                    }
+                  },
+                  'avg': {
+                    'avg': {
+                      'field': colname
+                    }
+                  },
+                  'percentiles': {
+                    'percentiles': {
+                      'field': colname,
+                      'percents': [
+                        25,
+                        50,
+                        75
+                      ]
+                    }
+                  },
+                  'size': {
+                      'bucket_sort': {
+                          'sort': [],
+                          'size': 10
+                      }
+                  }
+                }
+            }
+        }
+      }
+    }).then(function(resp) {
+      console.log('Successful query!');
+      console.log(JSON.stringify(resp, null, 4));
+      return resp.aggregations.overtime.buckets;
     }, function(err) {
       console.log(err.message);
     });
