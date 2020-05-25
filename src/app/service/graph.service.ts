@@ -2,14 +2,21 @@ import { Injectable } from '@angular/core';
 import { ElasticsearchService } from '../services/elasticsearch.service';
 import * as Highcharts from 'highcharts';
 import Bullet from 'highcharts/modules/bullet';
+import { DialogflowService } from './dialogflow.service';
+import { ReplaySubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GraphService {
 
+
+  messageSource = new ReplaySubject<string>(1);
+
+
   private options: any;
-  constructor(private elasticService: ElasticsearchService) { }
+  constructor(private elasticService: ElasticsearchService, private dialogflowService: DialogflowService) { }
+
 
   draw(graph: string, colname: any, params: any) {
     switch (graph) {
@@ -27,6 +34,9 @@ export class GraphService {
         break;
       case 'box_plot':
         this.drawBoxPlot(colname, params);
+        break;
+      case 'slope_graph':
+        this.drawSlopeChart(colname, params);
         break;
 
     }
@@ -281,7 +291,7 @@ export class GraphService {
   }
 
   drawBoxPlot(colname: string, params: any) {
-    this.elasticService.getBoxPlotTime(colname, params.IntervalTime).then((res) => {
+    this.elasticService.getBoxPlotTime(colname, params.IntervalTime, params.timeField).then((res) => {
       console.log("dibujando box plot");
       console.log(res);
 
@@ -327,6 +337,102 @@ export class GraphService {
         }]
     };
     Highcharts.chart('container', this.options);
+    });
+  }
+
+  drawSlopeChart(colname: string, params: any) {
+    this.elasticService.getSlopeGraph(colname, params['date-period'], params.timeField).then((res) => {
+      if (res.length <= 0) {
+        // Check no params in query
+        this.messageSource.next('Lo siento, no hay datos en ese intervalo');
+      } else {
+        let dates = params['date-period'].split('/');
+        let ini = res[0]._source[colname];
+        let fin = res[res.length - 1]._source[colname];
+        console.log(res);
+        this.options = {
+            chart: {
+                renderTo: 'container',
+                defaultSeriesType: 'line',
+                marginTop: 100
+            },
+            title: {
+                text: 'Slope Graph'
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                formatter: function() {
+                    return this.series.name + ' ' + this.y;
+                }
+            },
+            xAxis: {
+                opposite: true,
+                lineColor: '#999',
+                categories: [dates[0], dates[1]],
+                title: {
+                    text: ''
+                },
+                labels: {
+                    style: {
+                        fontWeight: 'bold'
+                    }
+                }
+            },
+            yAxis: {
+                gridLineWidth: 0,
+                labels: {
+                    enabled: false,
+                },
+                title: {
+                    text: '',
+              }
+            },
+            plotOptions: {
+                line: {
+                    lineWidth: 2,
+                    shadow: false,
+                    color: '#666',
+                    marker: {
+                        radius: 2,
+                        symbol: 'circle'
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        align: 'left',
+                        x: 10,
+                        y: 0
+                    }
+                },
+                scatter: {
+                    shadow: false,
+                    color: '#666',
+                    marker: {
+                        radius: 2
+                    },
+                    dataLabels: {
+                        enabled: true,
+                        align: 'right',
+                        x: -10,
+                        y: 0,
+                        formatter: function() {
+                            return this.point.name + ' ' + this.y;
+                        }
+                    }
+                }
+            },
+            series: [{
+                name: colname,
+                data: [ini, fin]
+            }, {
+                type: 'scatter',
+                data: [{'x': 0, 'y': fin, 'name': colname}]
+              }]
+          };
+        Highcharts.chart('container', this.options);
+      }
+
     });
   }
 }

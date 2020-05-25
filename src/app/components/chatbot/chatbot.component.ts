@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DialogflowService } from 'src/app/service/dialogflow.service';
 import { GraphService } from 'src/app/service/graph.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chatbot',
@@ -22,6 +23,10 @@ export class ChatbotComponent implements OnInit {
   ngOnInit() {
     this.userMessage = 'Hola';
     this.sendMessage(1);
+    this.graphService.messageSource.subscribe((response) => {
+      console.log('In subscribe');
+      this.responseChatbot(response);
+    });
   }
   sendMessage(flag) {
     let splitString = [];
@@ -56,6 +61,17 @@ export class ChatbotComponent implements OnInit {
       this.scrollChat();
     });
     this.poster_path = '';
+  }
+
+  responseChatbot(response: string) {
+    console.log('pushing');
+    this.messages.push({});
+    this.messages.push({
+      url: this.bot_url,
+      text: response,
+      poster_path: this.poster_path ? 'http://image.tmdb.org/t/p/w154/' + this.poster_path : ''
+    });
+    this.scrollChat();
   }
 
   scrollChat() {

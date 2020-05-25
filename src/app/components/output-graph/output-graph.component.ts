@@ -23,40 +23,7 @@ export class OutputGraphComponent implements OnInit {
   constructor(private elasticService: ElasticsearchService) { }
 
   ngOnInit() {
-    this.options = {
 
-      chart: {
-          type: 'boxplot'
-      },
-      title: {
-          text: 'Box Plot'
-      },
-      legend: {
-          enabled: false
-      },
-      xAxis: {
-          categories: ['1', '2', '3', '4', '5'],
-          title: {
-              text: 'Intervalo de Tiempo'
-          }
-      },
-      yAxis: {
-          title: {
-              text: 'Observations'
-          }
-      },
-      series: [{
-          name: 'Observations',
-          data: [
-              [760, 801, 848, 895, 965],
-              [733, 853, 939, 980, 1080],
-              [714, 762, 817, 870, 918],
-              [724, 802, 806, 871, 950],
-              [834, 836, 864, 882, 910]
-          ]
-      }]
-  };
-  Highcharts.chart('container', this.options);
     /*
     if (window.addEventListener) {
       (<any>window).addEventListener("message", this.displayMessage, false);

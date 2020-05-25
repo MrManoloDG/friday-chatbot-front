@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as elasticsearch from 'elasticsearch-browser';
 import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { time } from 'highcharts';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -94,11 +95,20 @@ export class ElasticsearchService {
     return this.client.search({
       index: 'covid_canada',
       body: {
+        size: 10000,
         aggs : {
           colname : {
               terms : {
                 field : colname,
                 order : { _key : 'asc'}
+              },
+              aggs: {
+                'size': {
+                  'bucket_sort': {
+                      'sort': [],
+                      'size': 10000
+                  }
+                }
               }
           }
       }
@@ -132,16 +142,16 @@ export class ElasticsearchService {
     });
   }
 
-  async getBoxPlotTime(colname: string, period: string) {
+  async getBoxPlotTime(colname: string, period: string, timeField: string) {
     return this.client.search({
       index: 'covid_canada',
       body: {
-        '_source': [colname, 'date'],
+        '_source': [colname, timeField],
         'size': 10000,
         'aggs' : {
             'overtime' : {
                 'date_histogram' : {
-                    'field' : 'date',
+                    'field' : timeField,
                     'calendar_interval' : this.IntervalTime[period],
                     'order': {
                       '_key': 'desc'
@@ -187,6 +197,43 @@ export class ElasticsearchService {
       console.log('Successful query!');
       console.log(JSON.stringify(resp, null, 4));
       return resp.aggregations.overtime.buckets;
+    }, function(err) {
+      console.log(err.message);
+    });
+  }
+
+  getSlopeGraph(colname: string, interval: string, timeField: string) {
+    let dates = interval.split('/');
+    console.log(dates);
+    let body = {
+      '_source': [colname, timeField, '@timestamp'],
+      'size': 10000,
+      'query': {
+          'range' : {
+          }
+      },
+      sort: [
+      ]
+    };
+
+    body.query.range[timeField] = {
+        'gte' : new Date(dates[0]).getTime(),
+        'lte' : new Date(dates[1]).getTime(),
+        'format': 'epoch_millis'
+    };
+
+    let sort = {};
+    sort[timeField] = {
+      'order': 'asc'
+    };
+    body.sort.push(sort);
+    return this.client.search({
+      index: 'covid_canada',
+      body: body
+    }).then(function(resp) {
+      console.log('Successful query!');
+      console.log(JSON.stringify(resp, null, 4));
+      return resp.hits.hits;
     }, function(err) {
       console.log(err.message);
     });
