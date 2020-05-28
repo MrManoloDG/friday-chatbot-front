@@ -36,7 +36,9 @@ export class OutputGraphComponent implements OnInit {
     for (let i = 0; i < n; i++) {
       const element = document.createElement('div');
       element.setAttribute('id', 'container' + i );
-      element.setAttribute('class', 'bullet-container');
+      element.className = 'bullet-container';
+      element.style.height = '100px';
+      element.style.width = '70%';
       graph_container.appendChild(element);
     }
   }
