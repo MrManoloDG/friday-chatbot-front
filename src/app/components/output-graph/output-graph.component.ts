@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { ElasticsearchService } from 'src/app/services/elasticsearch.service';
 import Bullet from 'highcharts/modules/bullet';
+import { GraphService } from 'src/app/service/graph.service';
 
 
 
@@ -20,18 +21,24 @@ export class OutputGraphComponent implements OnInit {
 
   public options: any;
 
-  constructor(private elasticService: ElasticsearchService) { }
+  constructor(private elasticService: ElasticsearchService, private graphService: GraphService) { }
 
   ngOnInit() {
+    this.graphService.graphContainers.subscribe((n) => {
+      this.setGraphContainers(n);
+    });
 
-    /*
-    if (window.addEventListener) {
-      (<any>window).addEventListener("message", this.displayMessage, false);
-    } else {
-      (<any>window).attachEvent("onmessage", this.displayMessage);
+  }
+
+  setGraphContainers(n: Number) {
+    const graph_container = document.getElementById('graphs');
+    graph_container.removeChild(document.getElementById('container'));
+    for (let i = 0; i < n; i++) {
+      const element = document.createElement('div');
+      element.setAttribute('id', 'container' + i );
+      element.setAttribute('class', 'bullet-container');
+      graph_container.appendChild(element);
     }
-    */
-
   }
 
 }

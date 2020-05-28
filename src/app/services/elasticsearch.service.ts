@@ -90,6 +90,36 @@ export class ElasticsearchService {
     });
   }
 
+  async getBulletGraphData(colname: string, groupCol: string) {
+    return this.client.search({
+      index: 'covid_canada',
+      body: {
+        size: 10000,
+        'aggs': {
+          'bullet': {
+            'terms': {
+              'field': groupCol,
+              'size': 10000
+            },
+            'aggs': {
+              'avg': {
+                'avg': {
+                  'field': colname
+                }
+              }
+            }
+          }
+        }
+      }
+    }).then(function(resp) {
+      console.log('Successful query!');
+      console.log(JSON.stringify(resp, null, 4));
+      return resp.aggregations.bullet.buckets;
+    }, function(err) {
+      console.log(err.message);
+    });
+  }
+
 
   async getHistogram(colname: string) {
     return this.client.search({

@@ -1,0 +1,10 @@
+.container-graph {
+    width:70%; height:40%;
+}
+
+.bullet-container {
+    width: 70%; 
+    height: 100px;
+    max-height: 100px;
+    max-width: 70%;
+}

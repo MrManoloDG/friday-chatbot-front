@@ -3,7 +3,7 @@ import { ElasticsearchService } from '../services/elasticsearch.service';
 import * as Highcharts from 'highcharts';
 import Bullet from 'highcharts/modules/bullet';
 import { DialogflowService } from './dialogflow.service';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +12,7 @@ export class GraphService {
 
 
   messageSource = new ReplaySubject<string>(1);
+  graphContainers = new ReplaySubject<Number>(1);
 
 
   private options: any;
@@ -134,15 +135,14 @@ export class GraphService {
   }
 
   drawBulletGraph(colname: string, params: any) {
-    this.elasticService.getLastByOneColName(colname).then((res) => {
+    this.elasticService.getBulletGraphData(colname, params.groupField).then((res) => {
       let values = [];
+      this.graphContainers.next(res.length);
       res.map(e => {
-        values.push(e._source[colname]);
+        values.push(e.avg.value);
       });
       console.log(values);
       console.log(params);
-      let max = Math.max.apply(null, values);
-
 
       console.log("Successfull query!");
       Highcharts.setOptions({
@@ -173,15 +173,17 @@ export class GraphService {
               enabled: false
           }
       });
-      this.options =  {
+      for (let index = 0; index < res.length; index++) {
+        const element = res[index];
+        this.options =  {
           chart: {
               marginTop: 40
           },
           title: {
-              text: '2017 YTD'
+              text: colname
           },
           xAxis: {
-              categories: ['<span class="hc-cat-title">' + colname + '</span>']
+              categories: ['<span class="hc-cat-title">' + element.key + '</span>']
           },
           yAxis: {
               plotBands: [{
@@ -201,7 +203,7 @@ export class GraphService {
           },
           series: [{
               data: [{
-                  y: values[0],
+                  y: element.avg.value,
                   target: Number(params.target)
               }]
           }],
@@ -209,7 +211,8 @@ export class GraphService {
               pointFormat: '<b>{point.y}</b> (with target at {point.target})'
           }
       };
-      Highcharts.chart('container', this.options);
+      Highcharts.chart('container' + index, this.options);
+      }
     });
   }
 
