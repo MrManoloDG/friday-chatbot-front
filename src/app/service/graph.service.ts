@@ -294,7 +294,7 @@ export class GraphService {
   }
 
   drawBoxPlot(colname: string, params: any) {
-    this.elasticService.getBoxPlotTime(colname, params.IntervalTime, params.timeField).then((res) => {
+    this.elasticService.getBoxPlotTime(colname, params.IntervalTime, params['date-period'], params.timeField).then((res) => {
       console.log("dibujando box plot");
       console.log(res);
 

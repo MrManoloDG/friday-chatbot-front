@@ -172,57 +172,60 @@ export class ElasticsearchService {
     });
   }
 
-  async getBoxPlotTime(colname: string, period: string, timeField: string) {
-    return this.client.search({
-      index: 'covid_canada',
-      body: {
-        '_source': [colname, timeField],
-        'size': 10000,
-        'aggs' : {
-            'overtime' : {
-                'date_histogram' : {
-                    'field' : timeField,
-                    'calendar_interval' : this.IntervalTime[period],
-                    'order': {
-                      '_key': 'desc'
-                    }
-                },
-                'aggs': {
+  async getBoxPlotTime(colname: string, period: string, interval: string, timeField: string) {
+    const dates = interval.split('/');
+    const body = {
+      '_source': [colname, timeField],
+      'size': 10000,
+      'query': {
+        'range' : {
+        }
+      },
+      'aggs' : {
+          'overtime' : {
+              'date_histogram' : {
+                  'field' : timeField,
+                  'calendar_interval' : this.IntervalTime[period]
+              },
+              'aggs': {
+                'min': {
                   'min': {
-                    'min': {
-                      'field': colname
-                    }
-                  },
+                    'field': colname
+                  }
+                },
+                'max': {
                   'max': {
-                    'max': {
-                      'field': colname
-                    }
-                  },
+                    'field': colname
+                  }
+                },
+                'avg': {
                   'avg': {
-                    'avg': {
-                      'field': colname
-                    }
-                  },
+                    'field': colname
+                  }
+                },
+                'percentiles': {
                   'percentiles': {
-                    'percentiles': {
-                      'field': colname,
-                      'percents': [
-                        25,
-                        50,
-                        75
-                      ]
-                    }
-                  },
-                  'size': {
-                      'bucket_sort': {
-                          'sort': [],
-                          'size': 10
-                      }
+                    'field': colname,
+                    'percents': [
+                      25,
+                      50,
+                      75
+                    ]
                   }
                 }
-            }
-        }
+              }
+          }
       }
+    };
+
+    body.query.range[timeField] = {
+      'gte' : new Date(dates[0]).getTime(),
+      'lte' : new Date(dates[1]).getTime(),
+      'format': 'epoch_millis'
+    };
+    return this.client.search({
+      index: 'covid_canada',
+      body: body
     }).then(function(resp) {
       console.log('Successful query!');
       console.log(JSON.stringify(resp, null, 4));
