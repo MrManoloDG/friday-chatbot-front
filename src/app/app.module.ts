@@ -11,11 +11,12 @@ import { HttpModule } from '@angular/http';
 import { ChartModule, HIGHCHARTS_MODULES } from 'angular-highcharts';
 import * as Highcharts from 'highcharts';
 import Bullet from 'highcharts/modules/bullet';
+import Heatmap from 'highcharts/modules/heatmap';
 import * as more from 'highcharts/highcharts-more.src';
 import * as exporting from 'highcharts/modules/exporting.src';
 
 Bullet(Highcharts);
-
+Heatmap(Highcharts);
 @NgModule({
   declarations: [
     AppComponent,

@@ -39,7 +39,8 @@ export class GraphService {
       case 'slope_graph':
         this.drawSlopeChart(colname, params);
         break;
-
+      case 'heatmap':
+        this.drawHeatMap(colname, params);
     }
   }
 
@@ -436,6 +437,91 @@ export class GraphService {
         Highcharts.chart('container', this.options);
       }
 
+    });
+  }
+
+
+  drawHeatMap(colname: string[], params: any) {
+    this.elasticService.getHeatMapData(colname, params.valueField).then((res) => {
+      let data = [];
+      let xAxis = [];
+      let yAxis = [];
+
+      res.xaxis.map(e => {
+        xAxis.push(e.key);
+      });
+
+      res.yaxis.map(e => {
+        yAxis.push(e.key);
+      });
+
+      res.data.map(e => {
+        let x = xAxis.indexOf(e.key);
+        e['2'].buckets.map( agg2 => {
+          let y = yAxis.indexOf(agg2.key);
+          data.push([x, y, agg2['1'].value]);
+        });
+      });
+
+      this.options = {
+
+        chart: {
+            type: 'heatmap',
+            marginTop: 40,
+            marginBottom: 80,
+            plotBorderWidth: 1
+        },
+        title: {
+            text: 'Sales per employee per weekday'
+        },
+        xAxis: {
+            categories: xAxis
+        },
+        yAxis: {
+            categories: yAxis,
+            title: null,
+            reversed: true
+        },
+        colorAxis: {
+            min: 0,
+            minColor: '#FFFFFF',
+            maxColor: Highcharts.getOptions().colors[0]
+        },
+        legend: {
+            align: 'right',
+            layout: 'vertical',
+            margin: 0,
+            verticalAlign: 'top',
+            y: 25,
+            symbolHeight: 280
+        },
+        series: [{
+            name: 'Sales per employee',
+            borderWidth: 1,
+            data: data,
+            dataLabels: {
+                enabled: true,
+                color: '#000000'
+            }
+        }],
+        responsive: {
+            rules: [{
+                condition: {
+                    maxWidth: 500
+                },
+                chartOptions: {
+                    yAxis: {
+                        labels: {
+                            formatter: function () {
+                                return this.value.charAt(0);
+                            }
+                        }
+                    }
+                }
+            }]
+        }
+    };
+      Highcharts.chart('container', this.options);
     });
   }
 }
