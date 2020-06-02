@@ -4,6 +4,7 @@ import * as Highcharts from 'highcharts';
 import Bullet from 'highcharts/modules/bullet';
 import { DialogflowService } from './dialogflow.service';
 import { ReplaySubject, BehaviorSubject } from 'rxjs';
+import { formatDate, DatePipe } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class GraphService {
 
   messageSource = new ReplaySubject<string>(1);
   graphContainers = new ReplaySubject<Number>(1);
-
+  pipe = new DatePipe('es-ES');
 
   private options: any;
   constructor(private elasticService: ElasticsearchService, private dialogflowService: DialogflowService) { }
@@ -41,6 +42,10 @@ export class GraphService {
         break;
       case 'heatmap':
         this.drawHeatMap(colname, params);
+        break;
+      case 'line_graph':
+        this.drawLineGraph(colname, params);
+        break;
     }
   }
 
@@ -522,6 +527,65 @@ export class GraphService {
         }
     };
       Highcharts.chart('container', this.options);
+    });
+  }
+
+  drawLineGraph(colname: string, params: any) {
+    this.elasticService.getSlopeGraph(colname, params['date-period'], params.timeField).then((res) => {
+      if (res.length <= 0) {
+        // Check no params in query
+        this.messageSource.next('Lo siento, no hay datos en ese intervalo');
+      } else {
+        let data = [];
+        let xAxis = [];
+        res.map(e => {
+          data.push(e._source[colname]);
+          const timefield = new Date().setTime(e._source[params.timeField]);
+          xAxis.push(this.pipe.transform(timefield, 'shortDate'));
+        });
+        console.log(res);
+        this.options = {
+            title: {
+                text: 'Line Graph'
+            },
+            subtitle: {
+                text: ''
+            },
+            yAxis: {
+                title: {
+                    text: colname
+                }
+            },
+            xAxis: {
+                categories: xAxis
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle'
+            },
+            series: [{
+                name: colname,
+                data: data
+            }],
+            responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    chartOptions: {
+                        legend: {
+                            layout: 'horizontal',
+                            align: 'center',
+                            verticalAlign: 'bottom'
+                        }
+                    }
+                }]
+            }
+        };
+        Highcharts.chart('container', this.options);
+      }
+
     });
   }
 }
