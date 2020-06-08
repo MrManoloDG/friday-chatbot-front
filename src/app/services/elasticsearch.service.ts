@@ -339,4 +339,64 @@ export class ElasticsearchService {
     });
   }
 
+
+  async getVarianceGraphData(colname: string[]) {
+    return this.client.search({
+      index: 'covid_canada',
+      body: {
+        size: 10000,
+        'aggs': {
+          'heatmap': {
+            'terms': {
+              'field': colname[1],
+              'order': {
+                '_key': 'asc'
+              },
+              'size': 10000
+            },
+            'aggs': {
+              '2': {
+                'terms': {
+                  'field': colname[0],
+                  'order': {
+                    '_key': 'asc'
+                  },
+                  'size': 10000
+                }
+              }
+            }
+          },
+          'xvalues': {
+            'terms': {
+              'field': colname[1],
+              'order': {
+                    '_key': 'asc'
+              },
+              'size': 10000
+            }
+          },
+          'yvalues': {
+            'terms': {
+              'field': colname[0],
+              'order': {
+                    '_key': 'asc'
+              },
+              'size': 10000
+            }
+          }
+        }
+      }
+    }).then(function(resp) {
+      console.log('Successful query!');
+      console.log(JSON.stringify(resp, null, 4));
+      return {
+        total: resp.hits.total.value,
+        data: resp.aggregations.heatmap.buckets,
+        xaxis: resp.aggregations.xvalues.buckets,
+        yaxis: resp.aggregations.yvalues.buckets
+      };
+    }, function(err) {
+      console.log(err.message);
+    });
+  }
 }

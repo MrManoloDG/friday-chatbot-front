@@ -46,6 +46,8 @@ export class GraphService {
       case 'line_graph':
         this.drawLineGraph(colname, params);
         break;
+      case 'variace_graph':
+        this.drawVarianceGraph(colname, params);
     }
   }
 
@@ -588,4 +590,69 @@ export class GraphService {
 
     });
   }
+
+
+  drawVarianceGraph(colname: string[], params: any) {
+    this.elasticService.getVarianceGraphData(colname).then((res) => {
+      let series = [];
+      let total = res.total;
+      let categories = [];
+
+      res.yaxis.map(e => {
+        categories.push(e.key);
+      });
+
+      res.data.map(e => {
+        let serie = {
+          name: e.key,
+          data: new Array(categories.length).fill(0)
+        };
+
+        e['2'].buckets.map( agg2 => {
+          let index = categories.indexOf(agg2.key);
+          serie.data[index] = agg2.doc_count / total;
+        });
+        series.push(serie);
+      });
+
+
+      this.options = {
+        chart: {
+            type: 'bar'
+        },
+        title: {
+            text: 'Variance Graph'
+        },
+        subtitle: {
+            text: ''
+        },
+        xAxis: [{
+            categories: categories,
+            reversed: false,
+            labels: {
+                step: 1
+            }
+        }],
+        yAxis: {
+            title: {
+                text: null
+            },
+            labels: {
+                formatter: function () {
+                    return Math.abs(this.value) + '%';
+                }
+            }
+        },
+        plotOptions: {
+            series: {
+                stacking: 'normal'
+            }
+        },
+        series: series
+    };
+      Highcharts.chart('container', this.options);
+    });
+  }
+
+
 }
