@@ -5,6 +5,8 @@ import Bullet from 'highcharts/modules/bullet';
 import { DialogflowService } from './dialogflow.service';
 import { ReplaySubject, BehaviorSubject } from 'rxjs';
 import { formatDate, DatePipe } from '@angular/common';
+import * as $ from 'jquery';
+import 'datatables.net';
 
 @Injectable({
   providedIn: 'root'
@@ -48,8 +50,12 @@ export class GraphService {
         break;
       case 'variace_graph':
         this.drawVarianceGraph(colname, params);
+        break;
+      case 'highlight_table':
+        this.drawHighLightTable(colname, params);
     }
   }
+
 
   drawHistogram(colname: string) {
     console.log("Drawing a histogram");
@@ -654,5 +660,35 @@ export class GraphService {
     });
   }
 
+  drawHighLightTable(colname: string, params: any) {
+    this.elasticService.getAllFields(params.fields).then((res) => {
+      // tslint:disable-next-line: max-line-length
+      $('#container').append(`<table id="highlight-table" class="table table-responsive"><thead><tr></tr></thead><tbody></tbody></table>`);
+      params.fields.map(e => {
+        $('#highlight-table > thead > tr ').append(`<th scope="col">${e}</th>`);
+      });
+      res.map(e => {
+        let row = '<tr>';
+        if (this.functionBetween(e._source[colname], params.interval1, params.interval2)) {
+          row = '<tr class="table-success">';
+        } else {
+          row = '<tr class="table-danger">';
+        }
+        params.fields.map(field => {
+          row += '<td>' + e._source[field] + '</td>';
+        });
+        row += '</tr>';
+        $('#highlight-table > tbody').append(row);
+      });
+      $('#highlight-table').DataTable({responsive: true});
+    });
+  }
+
+  // Funtion to check if a number is between others
+  functionBetween(numb, a, b) {
+    const min = Math.min.apply(Math, [a, b]),
+      max = Math.max.apply(Math, [a, b]);
+    return numb > min && numb < max;
+  }
 
 }

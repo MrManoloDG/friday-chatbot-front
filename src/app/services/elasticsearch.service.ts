@@ -45,6 +45,25 @@ export class ElasticsearchService {
     });
   }
 
+  async getAllFields(fields: string[]) {
+    return this.client.search({
+      index: 'covid_canada',
+      body: {
+        _source: fields,
+        size: 10000,
+        query: {
+          match_all: {}
+        }
+      }
+    }).then(function(resp) {
+      console.log('Successful query!');
+      console.log(JSON.stringify(resp, null, 4));
+      return resp.hits.hits;
+    }, function(err) {
+      console.log(err.message);
+    });
+  }
+
   async getByOneColName(colname: string) {
     return this.client.search({
       index: 'covid_canada',

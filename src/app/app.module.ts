@@ -16,6 +16,7 @@ import * as more from 'highcharts/highcharts-more.src';
 import * as exporting from 'highcharts/modules/exporting.src';
 import localeEs from '@angular/common/locales/es';
 import { registerLocaleData } from '@angular/common';
+import {DataTablesModule} from 'angular-datatables';
 
 registerLocaleData(localeEs, 'es-ES');
 
@@ -32,6 +33,7 @@ Heatmap(Highcharts);
     FormsModule,
     HttpClientModule,
     HttpModule,
+    DataTablesModule,
     ChartModule
   ],
   providers: [
