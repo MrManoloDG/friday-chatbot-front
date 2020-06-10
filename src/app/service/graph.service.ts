@@ -16,6 +16,7 @@ export class GraphService {
 
   messageSource = new ReplaySubject<string>(1);
   graphContainers = new ReplaySubject<Number>(1);
+  graphContainerOption = new ReplaySubject<string>(1);
   pipe = new DatePipe('es-ES');
 
   private options: any;
@@ -53,9 +54,12 @@ export class GraphService {
         break;
       case 'highlight_table':
         this.drawHighLightTable(colname, params);
+        break;
+      case 'multiple_scatter_plots':
+        this.drawMultipleScatterPlots(colname, params);
+        break;
     }
   }
-
 
   drawHistogram(colname: string) {
     console.log("Drawing a histogram");
@@ -151,6 +155,7 @@ export class GraphService {
   drawBulletGraph(colname: string, params: any) {
     this.elasticService.getBulletGraphData(colname, params.groupField).then((res) => {
       let values = [];
+      this.graphContainerOption.next('bullet');
       this.graphContainers.next(res.length);
       res.map(e => {
         values.push(e.avg.value);
@@ -689,6 +694,89 @@ export class GraphService {
     const min = Math.min.apply(Math, [a, b]),
       max = Math.max.apply(Math, [a, b]);
     return numb > min && numb < max;
+  }
+
+  drawMultipleScatterPlots(colname: string[], params: any) {
+    this.graphContainerOption.next('multiple_scatters');
+    this.graphContainers.next((colname.length * colname.length));
+    let index = 0;
+    colname.map(colname1 => {
+      colname.map(colname2 => {
+        this.elasticService.getTwoColname(colname).then((res) => {
+          const data = [];
+          res.map(e => {
+            data.push([e._source[colname1], e._source[colname2]]);
+          });
+          this.options = {
+            chart: {
+                type: 'scatter',
+                zoomType: 'xy'
+            },
+            title: {
+                text: 'Scatter Plot'
+            },
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                title: {
+                    enabled: true,
+                    text: colname1
+                },
+                startOnTick: true,
+                endOnTick: true,
+                showLastLabel: true
+            },
+            yAxis: {
+                title: {
+                    text: colname2
+                }
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'left',
+                verticalAlign: 'top',
+                x: 100,
+                y: 70,
+                floating: true,
+                backgroundColor: Highcharts.defaultOptions.chart.backgroundColor,
+                borderWidth: 1
+            },
+            plotOptions: {
+                scatter: {
+                    marker: {
+                        radius: 5,
+                        states: {
+                            hover: {
+                                enabled: true,
+                                lineColor: 'rgb(100,100,100)'
+                            }
+                        }
+                    },
+                    states: {
+                        hover: {
+                            marker: {
+                                enabled: false
+                            }
+                        }
+                    },
+                    tooltip: {
+                        headerFormat: '<b>{series.name}</b><br>',
+                        pointFormat: '{point.x} , {point.y} '
+                    }
+                }
+            },
+            series: [{
+                name: 'Point',
+                color: 'rgba(223, 83, 83, .5)',
+                data: data
+            }]
+        };
+          Highcharts.chart('container' + index, this.options);
+          index += 1;
+        });
+      });
+    });
   }
 
 }

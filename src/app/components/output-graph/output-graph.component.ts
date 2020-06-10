@@ -19,11 +19,14 @@ let More = require('highcharts/highcharts-more');
 })
 export class OutputGraphComponent implements OnInit {
 
-  public options: any;
+  public options: string;
 
   constructor(private elasticService: ElasticsearchService, private graphService: GraphService) { }
 
   ngOnInit() {
+    this.graphService.graphContainerOption.subscribe((option) => {
+      this.options = option;
+    })
     this.graphService.graphContainers.subscribe((n) => {
       this.setGraphContainers(n);
     });
@@ -36,8 +39,13 @@ export class OutputGraphComponent implements OnInit {
     for (let i = 0; i < n; i++) {
       const element = document.createElement('div');
       element.setAttribute('id', 'container' + i );
-      element.className = 'bullet-container';
-      element.style.height = '100px';
+      if (this.options === 'bullet') {
+        element.className = 'bullet-container';
+        element.style.height = '100px';
+      } else {
+        element.className = 'container-graph';
+        element.style.height = '40%';
+      }
       element.style.width = '70%';
       graph_container.appendChild(element);
     }
