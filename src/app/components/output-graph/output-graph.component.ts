@@ -3,6 +3,7 @@ import * as Highcharts from 'highcharts';
 import { ElasticsearchService } from 'src/app/services/elasticsearch.service';
 import Bullet from 'highcharts/modules/bullet';
 import { GraphService } from 'src/app/service/graph.service';
+import * as $ from 'jquery';
 
 
 
@@ -20,34 +21,45 @@ let More = require('highcharts/highcharts-more');
 export class OutputGraphComponent implements OnInit {
 
   public options: string;
+  public hiddenGraph: boolean;
 
   constructor(private elasticService: ElasticsearchService, private graphService: GraphService) { }
 
   ngOnInit() {
+    this.hiddenGraph = false;
     this.graphService.graphContainerOption.subscribe((option) => {
       this.options = option;
-    })
+      if (option === 'table') {
+        $('#container').css('height', '65%');
+      }
+    });
     this.graphService.graphContainers.subscribe((n) => {
       this.setGraphContainers(n);
     });
+    this.graphService.graphShow.subscribe((show) => {
+      this.hiddenGraph = show;
+    })
 
   }
 
   setGraphContainers(n: Number) {
-    const graph_container = document.getElementById('graphs');
-    graph_container.removeChild(document.getElementById('container'));
+    const graph_container = $('#graphs');
+    graph_container.empty();
     for (let i = 0; i < n; i++) {
-      const element = document.createElement('div');
-      element.setAttribute('id', 'container' + i );
+      const id_element = 'container' + i;
       if (this.options === 'bullet') {
-        element.className = 'bullet-container';
-        element.style.height = '100px';
+        graph_container.append(`<div id='${id_element}' class='bullet-container'></div>`);
       } else {
-        element.className = 'container-graph';
-        element.style.height = '40%';
+        graph_container.append(`<div id='${id_element}' class='container-graph'></div>`);
       }
-      element.style.width = '70%';
-      graph_container.appendChild(element);
+    }
+  }
+
+  checkDisabled(id: string) {
+    if (document.querySelector(id).childElementCount < 1) {
+      return true;
+    } else {
+      return false;
     }
   }
 

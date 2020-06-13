@@ -1,7 +1,44 @@
 #chatbot {
-    position: absolute;
-    right: 50px;
-    bottom: 10px;
-
+    flex: 0 0 25%;
+    max-width: 25%;
+    max-height: 100%;
 }
 
+#graph-component {
+    width: 100%;
+    display: flex;
+    padding: 2em;
+    flex: 0 0 75%;
+    max-width: 75%;
+    max-height: 100%;
+    overflow: auto;
+    background: linear-gradient(to bottom left, #f4f6fd, white );
+}
+
+/* Estilos para motores Webkit y blink (Chrome, Safari, Opera... )*/
+
+#graph-component::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+#graph-component::-webkit-scrollbar:vertical {
+    width:10px;
+}
+
+#graph-component::-webkit-scrollbar-button:increment,.contenedor::-webkit-scrollbar-button {
+    display: none;
+} 
+
+#graph-component::-webkit-scrollbar:horizontal {
+    height: 10px;
+}
+
+#graph-component::-webkit-scrollbar-thumb {
+    background-color: rgb(151, 120, 177);
+    border-radius: 20px;
+    border: 2px solid #f1f2f3;
+}
+
+#graph-component::-webkit-scrollbar-track {
+    border-radius: 10px;  
+}

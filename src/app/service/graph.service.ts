@@ -17,6 +17,7 @@ export class GraphService {
   messageSource = new ReplaySubject<string>(1);
   graphContainers = new ReplaySubject<Number>(1);
   graphContainerOption = new ReplaySubject<string>(1);
+  graphShow = new ReplaySubject<boolean>(1);
   pipe = new DatePipe('es-ES');
 
   private options: any;
@@ -101,6 +102,7 @@ export class GraphService {
       };
 
       Highcharts.chart('container', this.options);
+      this.graphShow.next(true);
     });
   }
 
@@ -149,6 +151,7 @@ export class GraphService {
       };
 
       Highcharts.chart('container', this.options);
+      this.graphShow.next(true);
     });
   }
 
@@ -309,6 +312,7 @@ export class GraphService {
         }]
     };
       Highcharts.chart('container', this.options);
+      this.graphShow.next(true);
     });
   }
 
@@ -359,6 +363,7 @@ export class GraphService {
         }]
     };
     Highcharts.chart('container', this.options);
+    this.graphShow.next(true);
     });
   }
 
@@ -453,6 +458,7 @@ export class GraphService {
               }]
           };
         Highcharts.chart('container', this.options);
+        this.graphShow.next(true);
       }
 
     });
@@ -540,6 +546,7 @@ export class GraphService {
         }
     };
       Highcharts.chart('container', this.options);
+      this.graphShow.next(true);
     });
   }
 
@@ -597,6 +604,7 @@ export class GraphService {
             }
         };
         Highcharts.chart('container', this.options);
+        this.graphShow.next(true);
       }
 
     });
@@ -662,13 +670,15 @@ export class GraphService {
         series: series
     };
       Highcharts.chart('container', this.options);
+      this.graphShow.next(true);
     });
   }
 
   drawHighLightTable(colname: string, params: any) {
     this.elasticService.getAllFields(params.fields).then((res) => {
+      this.graphContainerOption.next('table');
       // tslint:disable-next-line: max-line-length
-      $('#container').append(`<table id="highlight-table" class="table table-responsive"><thead><tr></tr></thead><tbody></tbody></table>`);
+      $('#container').append(`<table id="highlight-table" class="table table-responsive my-auto" style='width: 95%'><thead><tr></tr></thead><tbody></tbody></table>`);
       params.fields.map(e => {
         $('#highlight-table > thead > tr ').append(`<th scope="col">${e}</th>`);
       });
@@ -685,7 +695,13 @@ export class GraphService {
         row += '</tr>';
         $('#highlight-table > tbody').append(row);
       });
-      $('#highlight-table').DataTable({responsive: true});
+      $('#highlight-table').DataTable({
+        responsive: true,
+        'language': {
+            'url': '//cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+        }
+      });
+      this.graphShow.next(true);
     });
   }
 

@@ -1,4 +1,65 @@
 /* You can add global styles to this file, and also import other style files */
 .bg-celeste {
-    background-color: #81DAF5;
+    background-color: #044D8C;
 }
+
+.text-celeste {
+    color: #001bb3;
+    font-weight: 500;
+    border-left: rgb(151, 120, 177) 2px solid;
+}
+
+.text-user {
+    font-weight: 500;
+    color: #161616;
+}
+
+.text-title {
+    color: rgb(99, 41, 146);
+}
+
+
+
+body {
+    height: 100% !important;
+}
+
+app-root {
+    display: flex;
+    height: 100vh;
+    flex-wrap: wrap;
+}
+
+.container-graph {
+    width: 100%; height:60%;
+    margin-bottom: 3rem;
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+/* On mouse-over, add a deeper shadow */
+.container-graph:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.bullet-container {
+    height: 100px;
+    max-height: 100px;
+    max-width: 100%;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+/* On mouse-over, add a deeper shadow */
+.bullet-container:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+/* Color Theme Swatches in Hex */
+.Interacción-1-hex { color: #010f8a; }
+.Interacción-2-hex { color: rgb(4, 58, 140); }
+.Interacción-3-hex { color: #0568A6; }
+.Interacción-4-hex { color: #068BBF; }
+.Interacción-5-hex { color: #07B2D9; }

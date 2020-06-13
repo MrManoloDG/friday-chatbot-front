@@ -1,10 +1,30 @@
+#graphs {
+    width: 100%;
+}
+
 .container-graph {
-    width:70%; height:40%;
+    width: 100%; height:60%;
+    margin-bottom: 3rem;
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+/* On mouse-over, add a deeper shadow */
+.container-graph:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
 
 .bullet-container {
-    width: 70%; 
     height: 100px;
     max-height: 100px;
-    max-width: 70%;
+    max-width: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
 }
+
+/* On mouse-over, add a deeper shadow */
+.bullet-container:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+    
