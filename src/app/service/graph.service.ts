@@ -27,10 +27,10 @@ export class GraphService {
   draw(graph: string, colname: any, params: any) {
     switch (graph) {
       case 'histogram':
-        this.drawHistogram(colname);
+        this.drawHistogram(colname, params);
         break;
       case 'frequency_polygon':
-        this.drawFrequencyPolygon(colname);
+        this.drawFrequencyPolygon(colname, params);
         break;
       case 'bullet_graph':
         this.drawBulletGraph(colname, params);
@@ -62,10 +62,10 @@ export class GraphService {
     }
   }
 
-  drawHistogram(colname: string) {
+  drawHistogram(colname: string, params: any) {
     console.log("Drawing a histogram");
     console.log(colname);
-    this.elasticService.getHistogram(colname).then((res) => {
+    this.elasticService.getHistogram(colname, params.url).then((res) => {
       let categories = [];
       let data = [];
       res.map(e => {
@@ -106,10 +106,10 @@ export class GraphService {
     });
   }
 
-  drawFrequencyPolygon(colname: string) {
+  drawFrequencyPolygon(colname: string, params: any) {
     console.log("Drawing a Frequency Polygon");
     console.log(colname);
-    this.elasticService.getHistogram(colname).then((res) => {
+    this.elasticService.getHistogram(colname, params.url).then((res) => {
       let categories = [];
       let data = [];
       res.map(e => {
@@ -156,7 +156,7 @@ export class GraphService {
   }
 
   drawBulletGraph(colname: string, params: any) {
-    this.elasticService.getBulletGraphData(colname, params.groupField).then((res) => {
+    this.elasticService.getBulletGraphData(colname, params.groupField, params.url).then((res) => {
       let values = [];
       this.graphContainerOption.next('bullet');
       this.graphContainers.next(res.length);
@@ -239,7 +239,7 @@ export class GraphService {
   }
 
   drawScatterPlot(colname: string[], params: any) {
-    this.elasticService.getTwoColname(colname).then((res) => {
+    this.elasticService.getTwoColname(colname, params.url).then((res) => {
       let data = [];
 
       res.map(e => {
@@ -317,7 +317,7 @@ export class GraphService {
   }
 
   drawBoxPlot(colname: string, params: any) {
-    this.elasticService.getBoxPlotTime(colname, params.IntervalTime, params['date-period'], params.timeField).then((res) => {
+    this.elasticService.getBoxPlotTime(colname, params.IntervalTime, params['date-period'], params.timeField, params.url).then((res) => {
       console.log("dibujando box plot");
       console.log(res);
 
@@ -368,7 +368,7 @@ export class GraphService {
   }
 
   drawSlopeChart(colname: string, params: any) {
-    this.elasticService.getSlopeGraph(colname, params['date-period'], params.timeField).then((res) => {
+    this.elasticService.getSlopeGraph(colname, params['date-period'], params.timeField, params.url).then((res) => {
       if (res.length <= 0) {
         // Check no params in query
         this.messageSource.next('Lo siento, no hay datos en ese intervalo');
@@ -466,7 +466,7 @@ export class GraphService {
 
 
   drawHeatMap(colname: string[], params: any) {
-    this.elasticService.getHeatMapData(colname, params.valueField).then((res) => {
+    this.elasticService.getHeatMapData(colname, params.valueField, params.url).then((res) => {
       let data = [];
       let xAxis = [];
       let yAxis = [];
@@ -551,7 +551,7 @@ export class GraphService {
   }
 
   drawLineGraph(colname: string, params: any) {
-    this.elasticService.getSlopeGraph(colname, params['date-period'], params.timeField).then((res) => {
+    this.elasticService.getSlopeGraph(colname, params['date-period'], params.timeField, params.url).then((res) => {
       if (res.length <= 0) {
         // Check no params in query
         this.messageSource.next('Lo siento, no hay datos en ese intervalo');
@@ -612,7 +612,7 @@ export class GraphService {
 
 
   drawVarianceGraph(colname: string[], params: any) {
-    this.elasticService.getVarianceGraphData(colname).then((res) => {
+    this.elasticService.getVarianceGraphData(colname, params.url).then((res) => {
       let series = [];
       let total = res.total;
       let categories = [];
@@ -675,7 +675,7 @@ export class GraphService {
   }
 
   drawHighLightTable(colname: string, params: any) {
-    this.elasticService.getAllFields(params.fields).then((res) => {
+    this.elasticService.getAllFields(params.fields, params.url).then((res) => {
       this.graphContainerOption.next('table');
       // tslint:disable-next-line: max-line-length
       $('#container').append(`<table id="highlight-table" class="table table-responsive my-auto" style='width: 95%'><thead><tr></tr></thead><tbody></tbody></table>`);
@@ -718,7 +718,7 @@ export class GraphService {
     let index = 0;
     colname.map(colname1 => {
       colname.map(colname2 => {
-        this.elasticService.getTwoColname(colname).then((res) => {
+        this.elasticService.getTwoColname(colname, params.url).then((res) => {
           const data = [];
           res.map(e => {
             data.push([e._source[colname1], e._source[colname2]]);

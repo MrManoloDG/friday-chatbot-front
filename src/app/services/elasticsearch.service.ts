@@ -45,9 +45,9 @@ export class ElasticsearchService {
     });
   }
 
-  async getAllFields(fields: string[]) {
+  async getAllFields(fields: string[], index: string) {
     return this.client.search({
-      index: 'covid_canada',
+      index: index,
       body: {
         _source: fields,
         size: 10000,
@@ -64,9 +64,9 @@ export class ElasticsearchService {
     });
   }
 
-  async getByOneColName(colname: string) {
+  async getByOneColName(colname: string, index: string) {
     return this.client.search({
-      index: 'covid_canada',
+      index: index,
       body: {
         _source: [colname],
         size: 10000,
@@ -83,9 +83,9 @@ export class ElasticsearchService {
     });
   }
 
-  async getLastByOneColName(colname: string) {
+  async getLastByOneColName(colname: string, index: string) {
     return this.client.search({
-      index: 'covid_canada',
+      index: index,
       body: {
         _source: [colname],
         size: 1,
@@ -109,9 +109,9 @@ export class ElasticsearchService {
     });
   }
 
-  async getBulletGraphData(colname: string, groupCol: string) {
+  async getBulletGraphData(colname: string, groupCol: string, index: string) {
     return this.client.search({
-      index: 'covid_canada',
+      index: index,
       body: {
         size: 10000,
         'aggs': {
@@ -140,9 +140,9 @@ export class ElasticsearchService {
   }
 
 
-  async getHistogram(colname: string) {
+  async getHistogram(colname: string, index: string) {
     return this.client.search({
-      index: 'covid_canada',
+      index: index,
       body: {
         size: 10000,
         aggs : {
@@ -172,9 +172,9 @@ export class ElasticsearchService {
   }
 
 
-  async getTwoColname(colnames: string[]) {
+  async getTwoColname(colnames: string[], index: string) {
     return this.client.search({
-      index: 'covid_canada',
+      index: index,
       body: {
         _source: [colnames[0], colnames[1]],
         size: 10000,
@@ -191,7 +191,7 @@ export class ElasticsearchService {
     });
   }
 
-  async getBoxPlotTime(colname: string, period: string, interval: string, timeField: string) {
+  async getBoxPlotTime(colname: string, period: string, interval: string, timeField: string, index: string) {
     const dates = interval.split('/');
     const body = {
       '_source': [colname, timeField],
@@ -243,7 +243,7 @@ export class ElasticsearchService {
       'format': 'epoch_millis'
     };
     return this.client.search({
-      index: 'covid_canada',
+      index: index,
       body: body
     }).then(function(resp) {
       console.log('Successful query!');
@@ -254,7 +254,7 @@ export class ElasticsearchService {
     });
   }
 
-  getSlopeGraph(colname: string, interval: string, timeField: string) {
+  getSlopeGraph(colname: string, interval: string, timeField: string, index: string) {
     let dates = interval.split('/');
     console.log(dates);
     let body = {
@@ -280,7 +280,7 @@ export class ElasticsearchService {
     };
     body.sort.push(sort);
     return this.client.search({
-      index: 'covid_canada',
+      index: index,
       body: body
     }).then(function(resp) {
       console.log('Successful query!');
@@ -292,9 +292,9 @@ export class ElasticsearchService {
   }
 
 
-  async getHeatMapData(colname: string[], value: string) {
+  async getHeatMapData(colname: string[], value: string, index: string) {
     return this.client.search({
-      index: 'covid_canada',
+      index: index,
       body: {
         size: 10000,
         'aggs': {
@@ -359,9 +359,9 @@ export class ElasticsearchService {
   }
 
 
-  async getVarianceGraphData(colname: string[]) {
+  async getVarianceGraphData(colname: string[], index: string) {
     return this.client.search({
-      index: 'covid_canada',
+      index: index,
       body: {
         size: 10000,
         'aggs': {
