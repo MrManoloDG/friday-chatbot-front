@@ -80,7 +80,7 @@ export class GraphService {
           type: 'column'
         },
         title: {
-          text: 'Histogram'
+          text: 'Histograma - ' + colname
         },
         subtitle: {
           text: ''
@@ -121,7 +121,7 @@ export class GraphService {
       console.log(res);
       this.options = {
         title: {
-          text: 'Frequency Polygon'
+          text: 'Polígono de frequencia - ' + colname
         },
         subtitle: {
           text: ''
@@ -134,14 +134,6 @@ export class GraphService {
           min: 0,
           title: {
             text: ''
-          }
-        },
-        plotOptions: {
-          series: {
-              label: {
-                  connectorAllowed: false
-              },
-              pointStart: 2010
           }
         },
         series: [{
@@ -202,7 +194,7 @@ export class GraphService {
               marginTop: 40
           },
           title: {
-              text: colname
+              text: colname + ' - ' + element.key
           },
           xAxis: {
               categories: ['<span class="hc-cat-title">' + element.key + '</span>']
@@ -252,7 +244,7 @@ export class GraphService {
             zoomType: 'xy'
         },
         title: {
-            text: 'Scatter Plot'
+            text: colname[0] + ' - ' + colname[1]
         },
         subtitle: {
             text: ''
@@ -341,7 +333,7 @@ export class GraphService {
             type: 'boxplot'
         },
         title: {
-            text: 'Box Plot'
+            text: colname + ' - ' + params.IntervalTime + ' - Periodo: ' + params['date-period']
         },
         legend: {
             enabled: false
@@ -354,11 +346,11 @@ export class GraphService {
         },
         yAxis: {
             title: {
-                text: 'Observations'
+                text: colname
             }
         },
         series: [{
-            name: 'Observations',
+            name: colname,
             data: data
         }]
     };
@@ -384,7 +376,7 @@ export class GraphService {
                 marginTop: 100
             },
             title: {
-                text: 'Slope Graph'
+                text: colname + ' - Periodo: ' + params['date-period']
             },
             legend: {
                 enabled: false
@@ -452,10 +444,7 @@ export class GraphService {
             series: [{
                 name: colname,
                 data: [ini, fin]
-            }, {
-                type: 'scatter',
-                data: [{'x': 0, 'y': fin, 'name': colname}]
-              }]
+            }]
           };
         Highcharts.chart('container', this.options);
         this.graphShow.next(true);
@@ -496,7 +485,7 @@ export class GraphService {
             plotBorderWidth: 1
         },
         title: {
-            text: 'Sales per employee per weekday'
+            text: params.valueField + ' en funcion de ' + colname[0] + ' y ' + colname[1]
         },
         xAxis: {
             categories: xAxis
@@ -520,7 +509,7 @@ export class GraphService {
             symbolHeight: 280
         },
         series: [{
-            name: 'Sales per employee',
+            name: params.valueField,
             borderWidth: 1,
             data: data,
             dataLabels: {
@@ -566,7 +555,7 @@ export class GraphService {
         console.log(res);
         this.options = {
             title: {
-                text: 'Line Graph'
+                text: colname + ' - Periodo: ' + params['date-period']
             },
             subtitle: {
                 text: ''
@@ -640,7 +629,7 @@ export class GraphService {
             type: 'bar'
         },
         title: {
-            text: 'Variance Graph'
+            text: 'Gráfico de varianza'
         },
         subtitle: {
             text: ''
@@ -718,7 +707,7 @@ export class GraphService {
     let index = 0;
     colname.map(colname1 => {
       colname.map(colname2 => {
-        this.elasticService.getTwoColname(colname, params.url).then((res) => {
+        this.elasticService.getTwoColname([colname1, colname2], params.url).then((res) => {
           const data = [];
           res.map(e => {
             data.push([e._source[colname1], e._source[colname2]]);
@@ -729,7 +718,7 @@ export class GraphService {
                 zoomType: 'xy'
             },
             title: {
-                text: 'Scatter Plot'
+                text: colname1 + ' - ' + colname2
             },
             subtitle: {
                 text: ''

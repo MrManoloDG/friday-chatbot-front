@@ -149,7 +149,8 @@ export class ElasticsearchService {
           colname : {
               terms : {
                 field : colname,
-                order : { _key : 'asc'}
+                order : { _key : 'asc'},
+                size: 10000
               },
               aggs: {
                 'size': {

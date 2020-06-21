@@ -50,7 +50,7 @@ export class ChatbotComponent implements OnInit {
         splitString = url.split('url');
         customMessage = json_draw.resp;
         this.graphService.draw(json_draw.graph, json_draw.colname, json_draw.parameters);
-        this.poster_path = splitString[1] ? splitString[1].replace(/['"]+/g, '') : '';
+        this.poster_path = '';
       }
       let botResponse = {
         url: this.bot_url,
