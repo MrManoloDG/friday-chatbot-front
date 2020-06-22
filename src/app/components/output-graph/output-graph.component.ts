@@ -32,14 +32,24 @@ export class OutputGraphComponent implements OnInit {
       if (option === 'table') {
         $('#container').css('height', '65%');
       }
+      if (option === 'reset') {
+        this.resetDraw();
+      }
     });
     this.graphService.graphContainers.subscribe((n) => {
       this.setGraphContainers(n);
     });
     this.graphService.graphShow.subscribe((show) => {
       this.hiddenGraph = show;
-    })
+      $('#container').removeAttr('hidden');
+    });
 
+  }
+
+  resetDraw() {
+    const graph_container = $('#graphs');
+    graph_container.empty();
+    graph_container.append(`<div id='container' hidden=true class='container-graph'></div>`);
   }
 
   setGraphContainers(n: Number) {

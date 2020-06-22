@@ -52,6 +52,9 @@ export class ChatbotComponent implements OnInit {
         this.graphService.draw(json_draw.graph, json_draw.colname, json_draw.parameters);
         this.poster_path = '';
       }
+      if (result.result.action.toString() === 'ResetDraw') {
+        this.graphService.resetContainers();
+      }
       let botResponse = {
         url: this.bot_url,
         text: customMessage ? customMessage : url,

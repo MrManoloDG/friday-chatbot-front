@@ -23,6 +23,10 @@ export class GraphService {
   private options: any;
   constructor(private elasticService: ElasticsearchService, private dialogflowService: DialogflowService) { }
 
+  resetContainers(){
+    this.graphContainerOption.next('reset');
+  }
+
   messageError(message: string){
     this.messageSource.next('Ha ocurrido un error. ' + message);
   }
