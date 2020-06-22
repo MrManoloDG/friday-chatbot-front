@@ -18,6 +18,7 @@ export class ChatbotComponent implements OnInit {
   userMessage = '';
   bot_url = 'https://www.pngfind.com/pngs/m/470-4703547_icon-user-icon-hd-png-download.png';
   user_url = 'https://www.pngfind.com/pngs/m/470-4703547_icon-user-icon-hd-png-download.png';
+  disabled_input = true;
 
 
   ngOnInit() {
@@ -29,6 +30,7 @@ export class ChatbotComponent implements OnInit {
     });
   }
   sendMessage(flag) {
+    this.disabled_input = true;
     let splitString = [];
     let customMessage = '';
     const tempMessage = this.userMessage;
@@ -61,6 +63,7 @@ export class ChatbotComponent implements OnInit {
         poster_path: this.poster_path ? 'http://image.tmdb.org/t/p/w154/' + this.poster_path : ''
       };
       this.messages.push(botResponse);
+      this.disabled_input = false;
       this.scrollChat();
     });
     this.poster_path = '';
@@ -90,6 +93,10 @@ export class ChatbotComponent implements OnInit {
     } else {
       return '';
     }
+  }
+
+  isDisabled() {
+    return this.disabled_input;
   }
 
   transformDrawResponse(response: any) {
