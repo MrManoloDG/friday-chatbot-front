@@ -23,6 +23,9 @@ export class GraphService {
   private options: any;
   constructor(private elasticService: ElasticsearchService, private dialogflowService: DialogflowService) { }
 
+  messageError(message: string){
+    this.messageSource.next('Ha ocurrido un error. ' + message);
+  }
 
   draw(graph: string, colname: any, params: any) {
     switch (graph) {
@@ -225,7 +228,11 @@ export class GraphService {
               pointFormat: '<b>{point.y}</b> (with target at {point.target})'
           }
       };
-      Highcharts.chart('container' + index, this.options);
+      try {
+        Highcharts.chart('container' + index, this.options);
+      } catch (error) {
+        this.messageError('Parece ser que ' + colname + ' no es de tipo numerico.');
+      }
       }
     });
   }
@@ -303,8 +310,12 @@ export class GraphService {
             data: data
         }]
     };
-      Highcharts.chart('container', this.options);
-      this.graphShow.next(true);
+      try {
+        Highcharts.chart('container', this.options);
+        this.graphShow.next(true);
+      } catch (error) {
+        this.messageError('Parece ser que ' + colname[0] + ' o ' + colname[1] + ' no es de tipo numerico.');
+      }
     });
   }
 
@@ -446,8 +457,12 @@ export class GraphService {
                 data: [ini, fin]
             }]
           };
-        Highcharts.chart('container', this.options);
-        this.graphShow.next(true);
+          try {
+            Highcharts.chart('container', this.options);
+            this.graphShow.next(true);
+          } catch (error) {
+            this.messageError('Parece ser que ' + colname + ' no es de tipo numerico.');
+          }
       }
 
     });
@@ -534,8 +549,12 @@ export class GraphService {
             }]
         }
     };
-      Highcharts.chart('container', this.options);
-      this.graphShow.next(true);
+      try {
+        Highcharts.chart('container', this.options);
+        this.graphShow.next(true);
+      } catch (error) {
+        this.messageError('Parece ser que ' + params.valueField + ' no es de tipo numerico.');
+      }
     });
   }
 
@@ -592,8 +611,12 @@ export class GraphService {
                 }]
             }
         };
-        Highcharts.chart('container', this.options);
-        this.graphShow.next(true);
+        try {
+          Highcharts.chart('container', this.options);
+          this.graphShow.next(true);
+        } catch (error) {
+          this.messageError('Parece ser que ' + colname + ' no es de tipo numerico.');
+        }
       }
 
     });
@@ -658,8 +681,12 @@ export class GraphService {
         },
         series: series
     };
-      Highcharts.chart('container', this.options);
-      this.graphShow.next(true);
+      try {
+        Highcharts.chart('container', this.options);
+        this.graphShow.next(true);
+      } catch (error) {
+        this.messageError('');
+      }
     });
   }
 
@@ -777,7 +804,11 @@ export class GraphService {
                 data: data
             }]
         };
-          Highcharts.chart('container' + index, this.options);
+          try {
+            Highcharts.chart('container' + index, this.options);
+          } catch (error) {
+            this.messageError('Parece ser que ' + colname1 + ' o ' + colname2 + ' no es de tipo numerico.');
+          }
           index += 1;
         });
       });
