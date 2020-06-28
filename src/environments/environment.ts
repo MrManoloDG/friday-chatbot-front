@@ -4,7 +4,7 @@
 
 export const environment = {
   token: 'e2a662cbb81a4f5bb4f2655746d95314' ,
-  elasticURI: 'http://fridaywebhook.duckdns.org:9200',
+  elasticURI: 'http://fridaywebhook.duckdns.org:9255',
   production: false
 };
 
